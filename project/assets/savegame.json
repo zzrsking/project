@@ -1,0 +1,133 @@
+{
+  "camera_offset": [
+    -107.00174246241727,
+    212.98788619766788
+  ],
+  "layers": {
+    "terrain": [],
+    "objects": [],
+    "collision": [
+      {
+        "centerx": 761,
+        "centery": 194,
+        "layer": "collision",
+        "is_collidable": true,
+        "properties": {
+          "name": "Circle Wall",
+          "wall_type": "circle"
+        },
+        "image_path": null,
+        "bind_camera": false,
+        "interact_type": "none",
+        "inventory": {},
+        "dialogue_tree": {}
+      },
+      {
+        "centerx": 823,
+        "centery": 828,
+        "layer": "collision",
+        "is_collidable": true,
+        "properties": {
+          "name": "Circle Wall",
+          "wall_type": "circle"
+        },
+        "image_path": null,
+        "bind_camera": false,
+        "interact_type": "none",
+        "inventory": {},
+        "dialogue_tree": {}
+      },
+      {
+        "centerx": -4,
+        "centery": 743,
+        "layer": "collision",
+        "is_collidable": true,
+        "properties": {
+          "name": "Circle Wall",
+          "wall_type": "circle"
+        },
+        "image_path": null,
+        "bind_camera": false,
+        "interact_type": "none",
+        "inventory": {},
+        "dialogue_tree": {}
+      },
+      {
+        "centerx": -31,
+        "centery": 855,
+        "layer": "collision",
+        "is_collidable": true,
+        "properties": {
+          "name": "Circle Wall",
+          "wall_type": "circle"
+        },
+        "image_path": null,
+        "bind_camera": false,
+        "interact_type": "none",
+        "inventory": {},
+        "dialogue_tree": {}
+      },
+      {
+        "centerx": 457,
+        "centery": 1067,
+        "layer": "collision",
+        "is_collidable": true,
+        "properties": {
+          "name": "Circle Wall",
+          "wall_type": "circle"
+        },
+        "image_path": null,
+        "bind_camera": false,
+        "interact_type": "none",
+        "inventory": {},
+        "dialogue_tree": {}
+      },
+      {
+        "centerx": 57,
+        "centery": 212,
+        "layer": "collision",
+        "is_collidable": true,
+        "properties": {
+          "name": "Circle Wall",
+          "wall_type": "circle"
+        },
+        "image_path": null,
+        "bind_camera": false,
+        "interact_type": "none",
+        "inventory": {},
+        "dialogue_tree": {}
+      }
+    ],
+    "characters": [
+      {
+        "centerx": 493,
+        "centery": 613,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": null,
+        "bind_camera": true,
+        "interact_type": "player",
+        "inventory": {
+          "gold": {
+            "item_id": "gold",
+            "name": "\u91d1\u5e01",
+            "icon_path": null,
+            "stackable": true,
+            "quantity": 1000,
+            "description": ""
+          }
+        },
+        "dialogue_tree": {},
+        "collision_offset": [
+          0.0,
+          -10.0
+        ],
+        "frame_count": 4
+      }
+    ],
+    "effects": []
+  }
+}

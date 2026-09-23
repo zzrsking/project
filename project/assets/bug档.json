@@ -1,0 +1,736 @@
+{
+  "camera_offset": [
+    39.704286813105625,
+    -313.1680157877469
+  ],
+  "layers": {
+    "terrain": [],
+    "objects": [
+      {
+        "centerx": 531,
+        "centery": 74,
+        "layer": "objects",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "terrain\\tree.png",
+        "bind_camera": false,
+        "interact_type": "item",
+        "inventory": {},
+        "dialogue_tree": {}
+      }
+    ],
+    "collision": [
+      {
+        "centerx": 450,
+        "centery": 353,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "special_obj.png",
+        "bind_camera": false,
+        "interact_type": "npc",
+        "inventory": {},
+        "dialogue_tree": {
+          "start": {
+            "id": "start",
+            "text": "\u94c1\u5320\uff1a\u60f3\u8981\u8fd9\u628a\u4f20\u5947\u4e4b\u5251\u5417 \u8001\u7b2c \u6211\u53ea\u6536\u4f60100\u4e2a\u7ea0\u7f20\u4e4b\u7f18",
+            "options": [
+              {
+                "text": "\u662f\u7684 \u963f\u5988\u514b\u62c9\u65af",
+                "next_node": "confirm",
+                "conditions": {
+                  "item": [
+                    "gold",
+                    100
+                  ],
+                  "level": 10
+                },
+                "effects": {
+                  "add_item": "legend_sword",
+                  "remove_item": [
+                    "gold",
+                    100
+                  ]
+                }
+              },
+              {
+                "text": "\u592a\u8d35\u4e86",
+                "next_node": "decline",
+                "conditions": {},
+                "effects": {}
+              },
+              {
+                "text": "\u6211\u662f\u5976\u9f99",
+                "next_node": "beiliya",
+                "conditions": {},
+                "effects": {}
+              }
+            ]
+          },
+          "confirm": {
+            "id": "confirm",
+            "text": "\u5df2\u83b7\u5f97\u4f20\u5947\u4e4b\u5251\uff01",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "decline": {
+            "id": "decline",
+            "text": "\u7b49\u4f60\u6512\u591f\u94b1\u518d\u6765\u5427...\u81ed\u8d1d\u8d1d \u7591\u4f3c\u6700\u7f8e\u4f2a\u4eba \u54c8\u54c8\u54c8\u54c8\u54c8\u54c8\u54c8",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "beiliya": {
+            "id": "beiliya",
+            "text": "\u6211\u662f\u8d1d\u5229\u4e9a... \u5b9d\u5b9d\u809a\u809a\u6253\u96f7\u5566 \u53ef\u4ee5\u7ed9\u6211\u5341\u4e2a\u6c49\u5821\u5403\u5417",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "centerx": 514,
+        "centery": 353,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "special_obj.png",
+        "bind_camera": false,
+        "interact_type": "npc",
+        "inventory": {},
+        "dialogue_tree": {
+          "start": {
+            "id": "start",
+            "text": "\u94c1\u5320\uff1a\u60f3\u8981\u8fd9\u628a\u4f20\u5947\u4e4b\u5251\u5417 \u8001\u7b2c \u6211\u53ea\u6536\u4f60100\u4e2a\u7ea0\u7f20\u4e4b\u7f18",
+            "options": [
+              {
+                "text": "\u662f\u7684 \u963f\u5988\u514b\u62c9\u65af",
+                "next_node": "confirm",
+                "conditions": {
+                  "item": [
+                    "gold",
+                    100
+                  ],
+                  "level": 10
+                },
+                "effects": {
+                  "add_item": "legend_sword",
+                  "remove_item": [
+                    "gold",
+                    100
+                  ]
+                }
+              },
+              {
+                "text": "\u592a\u8d35\u4e86",
+                "next_node": "decline",
+                "conditions": {},
+                "effects": {}
+              },
+              {
+                "text": "\u6211\u662f\u5976\u9f99",
+                "next_node": "beiliya",
+                "conditions": {},
+                "effects": {}
+              }
+            ]
+          },
+          "confirm": {
+            "id": "confirm",
+            "text": "\u5df2\u83b7\u5f97\u4f20\u5947\u4e4b\u5251\uff01",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "decline": {
+            "id": "decline",
+            "text": "\u7b49\u4f60\u6512\u591f\u94b1\u518d\u6765\u5427...\u81ed\u8d1d\u8d1d \u7591\u4f3c\u6700\u7f8e\u4f2a\u4eba \u54c8\u54c8\u54c8\u54c8\u54c8\u54c8\u54c8",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "beiliya": {
+            "id": "beiliya",
+            "text": "\u6211\u662f\u8d1d\u5229\u4e9a... \u5b9d\u5b9d\u809a\u809a\u6253\u96f7\u5566 \u53ef\u4ee5\u7ed9\u6211\u5341\u4e2a\u6c49\u5821\u5403\u5417",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "centerx": 577,
+        "centery": 353,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "special_obj.png",
+        "bind_camera": false,
+        "interact_type": "npc",
+        "inventory": {},
+        "dialogue_tree": {
+          "start": {
+            "id": "start",
+            "text": "\u94c1\u5320\uff1a\u60f3\u8981\u8fd9\u628a\u4f20\u5947\u4e4b\u5251\u5417 \u8001\u7b2c \u6211\u53ea\u6536\u4f60100\u4e2a\u7ea0\u7f20\u4e4b\u7f18",
+            "options": [
+              {
+                "text": "\u662f\u7684 \u963f\u5988\u514b\u62c9\u65af",
+                "next_node": "confirm",
+                "conditions": {
+                  "item": [
+                    "gold",
+                    100
+                  ],
+                  "level": 10
+                },
+                "effects": {
+                  "add_item": "legend_sword",
+                  "remove_item": [
+                    "gold",
+                    100
+                  ]
+                }
+              },
+              {
+                "text": "\u592a\u8d35\u4e86",
+                "next_node": "decline",
+                "conditions": {},
+                "effects": {}
+              },
+              {
+                "text": "\u6211\u662f\u5976\u9f99",
+                "next_node": "beiliya",
+                "conditions": {},
+                "effects": {}
+              }
+            ]
+          },
+          "confirm": {
+            "id": "confirm",
+            "text": "\u5df2\u83b7\u5f97\u4f20\u5947\u4e4b\u5251\uff01",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "decline": {
+            "id": "decline",
+            "text": "\u7b49\u4f60\u6512\u591f\u94b1\u518d\u6765\u5427...\u81ed\u8d1d\u8d1d \u7591\u4f3c\u6700\u7f8e\u4f2a\u4eba \u54c8\u54c8\u54c8\u54c8\u54c8\u54c8\u54c8",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "beiliya": {
+            "id": "beiliya",
+            "text": "\u6211\u662f\u8d1d\u5229\u4e9a... \u5b9d\u5b9d\u809a\u809a\u6253\u96f7\u5566 \u53ef\u4ee5\u7ed9\u6211\u5341\u4e2a\u6c49\u5821\u5403\u5417",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "centerx": 450,
+        "centery": 417,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "special_obj.png",
+        "bind_camera": false,
+        "interact_type": "npc",
+        "inventory": {},
+        "dialogue_tree": {
+          "start": {
+            "id": "start",
+            "text": "\u94c1\u5320\uff1a\u60f3\u8981\u8fd9\u628a\u4f20\u5947\u4e4b\u5251\u5417 \u8001\u7b2c \u6211\u53ea\u6536\u4f60100\u4e2a\u7ea0\u7f20\u4e4b\u7f18",
+            "options": [
+              {
+                "text": "\u662f\u7684 \u963f\u5988\u514b\u62c9\u65af",
+                "next_node": "confirm",
+                "conditions": {
+                  "item": [
+                    "gold",
+                    100
+                  ],
+                  "level": 10
+                },
+                "effects": {
+                  "add_item": "legend_sword",
+                  "remove_item": [
+                    "gold",
+                    100
+                  ]
+                }
+              },
+              {
+                "text": "\u592a\u8d35\u4e86",
+                "next_node": "decline",
+                "conditions": {},
+                "effects": {}
+              },
+              {
+                "text": "\u6211\u662f\u5976\u9f99",
+                "next_node": "beiliya",
+                "conditions": {},
+                "effects": {}
+              }
+            ]
+          },
+          "confirm": {
+            "id": "confirm",
+            "text": "\u5df2\u83b7\u5f97\u4f20\u5947\u4e4b\u5251\uff01",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "decline": {
+            "id": "decline",
+            "text": "\u7b49\u4f60\u6512\u591f\u94b1\u518d\u6765\u5427...\u81ed\u8d1d\u8d1d \u7591\u4f3c\u6700\u7f8e\u4f2a\u4eba \u54c8\u54c8\u54c8\u54c8\u54c8\u54c8\u54c8",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "beiliya": {
+            "id": "beiliya",
+            "text": "\u6211\u662f\u8d1d\u5229\u4e9a... \u5b9d\u5b9d\u809a\u809a\u6253\u96f7\u5566 \u53ef\u4ee5\u7ed9\u6211\u5341\u4e2a\u6c49\u5821\u5403\u5417",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "centerx": 450,
+        "centery": 479,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "special_obj.png",
+        "bind_camera": false,
+        "interact_type": "npc",
+        "inventory": {},
+        "dialogue_tree": {
+          "start": {
+            "id": "start",
+            "text": "\u94c1\u5320\uff1a\u60f3\u8981\u8fd9\u628a\u4f20\u5947\u4e4b\u5251\u5417 \u8001\u7b2c \u6211\u53ea\u6536\u4f60100\u4e2a\u7ea0\u7f20\u4e4b\u7f18",
+            "options": [
+              {
+                "text": "\u662f\u7684 \u963f\u5988\u514b\u62c9\u65af",
+                "next_node": "confirm",
+                "conditions": {
+                  "item": [
+                    "gold",
+                    100
+                  ],
+                  "level": 10
+                },
+                "effects": {
+                  "add_item": "legend_sword",
+                  "remove_item": [
+                    "gold",
+                    100
+                  ]
+                }
+              },
+              {
+                "text": "\u592a\u8d35\u4e86",
+                "next_node": "decline",
+                "conditions": {},
+                "effects": {}
+              },
+              {
+                "text": "\u6211\u662f\u5976\u9f99",
+                "next_node": "beiliya",
+                "conditions": {},
+                "effects": {}
+              }
+            ]
+          },
+          "confirm": {
+            "id": "confirm",
+            "text": "\u5df2\u83b7\u5f97\u4f20\u5947\u4e4b\u5251\uff01",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "decline": {
+            "id": "decline",
+            "text": "\u7b49\u4f60\u6512\u591f\u94b1\u518d\u6765\u5427...\u81ed\u8d1d\u8d1d \u7591\u4f3c\u6700\u7f8e\u4f2a\u4eba \u54c8\u54c8\u54c8\u54c8\u54c8\u54c8\u54c8",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "beiliya": {
+            "id": "beiliya",
+            "text": "\u6211\u662f\u8d1d\u5229\u4e9a... \u5b9d\u5b9d\u809a\u809a\u6253\u96f7\u5566 \u53ef\u4ee5\u7ed9\u6211\u5341\u4e2a\u6c49\u5821\u5403\u5417",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "centerx": 450,
+        "centery": 543,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "special_obj.png",
+        "bind_camera": false,
+        "interact_type": "npc",
+        "inventory": {},
+        "dialogue_tree": {
+          "start": {
+            "id": "start",
+            "text": "\u94c1\u5320\uff1a\u60f3\u8981\u8fd9\u628a\u4f20\u5947\u4e4b\u5251\u5417 \u8001\u7b2c \u6211\u53ea\u6536\u4f60100\u4e2a\u7ea0\u7f20\u4e4b\u7f18",
+            "options": [
+              {
+                "text": "\u662f\u7684 \u963f\u5988\u514b\u62c9\u65af",
+                "next_node": "confirm",
+                "conditions": {
+                  "item": [
+                    "gold",
+                    100
+                  ],
+                  "level": 10
+                },
+                "effects": {
+                  "add_item": "legend_sword",
+                  "remove_item": [
+                    "gold",
+                    100
+                  ]
+                }
+              },
+              {
+                "text": "\u592a\u8d35\u4e86",
+                "next_node": "decline",
+                "conditions": {},
+                "effects": {}
+              },
+              {
+                "text": "\u6211\u662f\u5976\u9f99",
+                "next_node": "beiliya",
+                "conditions": {},
+                "effects": {}
+              }
+            ]
+          },
+          "confirm": {
+            "id": "confirm",
+            "text": "\u5df2\u83b7\u5f97\u4f20\u5947\u4e4b\u5251\uff01",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "decline": {
+            "id": "decline",
+            "text": "\u7b49\u4f60\u6512\u591f\u94b1\u518d\u6765\u5427...\u81ed\u8d1d\u8d1d \u7591\u4f3c\u6700\u7f8e\u4f2a\u4eba \u54c8\u54c8\u54c8\u54c8\u54c8\u54c8\u54c8",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "beiliya": {
+            "id": "beiliya",
+            "text": "\u6211\u662f\u8d1d\u5229\u4e9a... \u5b9d\u5b9d\u809a\u809a\u6253\u96f7\u5566 \u53ef\u4ee5\u7ed9\u6211\u5341\u4e2a\u6c49\u5821\u5403\u5417",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "centerx": 641,
+        "centery": 353,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "None.png",
+        "bind_camera": false,
+        "interact_type": "npc",
+        "inventory": {},
+        "dialogue_tree": {
+          "start": {
+            "id": "start",
+            "text": "\u94c1\u5320\uff1a\u60f3\u8981\u8fd9\u628a\u4f20\u5947\u4e4b\u5251\u5417 \u8001\u7b2c \u6211\u53ea\u6536\u4f60100\u4e2a\u7ea0\u7f20\u4e4b\u7f18",
+            "options": [
+              {
+                "text": "\u662f\u7684 \u963f\u5988\u514b\u62c9\u65af",
+                "next_node": "confirm",
+                "conditions": {
+                  "item": [
+                    "gold",
+                    100
+                  ],
+                  "level": 10
+                },
+                "effects": {
+                  "add_item": "legend_sword",
+                  "remove_item": [
+                    "gold",
+                    100
+                  ]
+                }
+              },
+              {
+                "text": "\u592a\u8d35\u4e86",
+                "next_node": "decline",
+                "conditions": {},
+                "effects": {}
+              },
+              {
+                "text": "\u6211\u662f\u5976\u9f99",
+                "next_node": "beiliya",
+                "conditions": {},
+                "effects": {}
+              }
+            ]
+          },
+          "confirm": {
+            "id": "confirm",
+            "text": "\u5df2\u83b7\u5f97\u4f20\u5947\u4e4b\u5251\uff01",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "decline": {
+            "id": "decline",
+            "text": "\u7b49\u4f60\u6512\u591f\u94b1\u518d\u6765\u5427...\u81ed\u8d1d\u8d1d \u7591\u4f3c\u6700\u7f8e\u4f2a\u4eba \u54c8\u54c8\u54c8\u54c8\u54c8\u54c8\u54c8",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          },
+          "beiliya": {
+            "id": "beiliya",
+            "text": "\u6211\u662f\u8d1d\u5229\u4e9a... \u5b9d\u5b9d\u809a\u809a\u6253\u96f7\u5566 \u53ef\u4ee5\u7ed9\u6211\u5341\u4e2a\u6c49\u5821\u5403\u5417",
+            "options": [
+              {
+                "text": "\u79bb\u5f00",
+                "next_node": "exit",
+                "conditions": {},
+                "effects": {
+                  "end_dialogue": true
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "characters": [
+      {
+        "centerx": 887,
+        "centery": 213,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "characters/default_player.png",
+        "bind_camera": true,
+        "interact_type": "player",
+        "inventory": {
+          "gold": {
+            "item_id": "gold",
+            "name": "\u91d1\u5e01",
+            "icon_path": null,
+            "stackable": true,
+            "quantity": 1000,
+            "description": ""
+          }
+        },
+        "dialogue_tree": {},
+        "collision_offset": [
+          0.0,
+          -10.0
+        ],
+        "frame_count": 4
+      },
+      {
+        "centerx": 890,
+        "centery": 317,
+        "layer": "default",
+        "is_collidable": true,
+        "properties": {
+          "name": "New Object"
+        },
+        "image_path": "characters/default_player.png",
+        "bind_camera": false,
+        "interact_type": "player",
+        "inventory": {
+          "gold": {
+            "item_id": "gold",
+            "name": "\u91d1\u5e01",
+            "icon_path": null,
+            "stackable": true,
+            "quantity": 1000,
+            "description": ""
+          }
+        },
+        "dialogue_tree": {},
+        "collision_offset": [
+          0.0,
+          -10.0
+        ],
+        "frame_count": 4
+      }
+    ]
+  }
+}

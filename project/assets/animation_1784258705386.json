@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "fps": 30,
+  "currentIndex": 0,
+  "totalFrames": 4,
+  "width": 16,
+  "height": 16,
+  "frames": [
+    {
+      "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABDUlEQVR4AXTSu00DQRSF4VlEGwQO3ICFRAmEFEEEVEAFVABEFEFICUjIDThwQBuW1v5mfUd3H7b8z32de9Ye+6osvL5v1/2UBVltzQws1snk0A/yaGbwc7cvweapFKjFh79dh4sGzy/X/etmVecRa3E+/r/WPc5lDbNPULun4227P53Dm1mus8nMgNAChvVS9OQibh53nRojg4/3QweDDLNgOh8ZWHIPnrL9HJ4sh6eCJjMysJyHkd//ropZEH2xGRhqZCwi9+RZ2wziOxJY8rvLIdeTZ526GShAILoDEZHHTC+YGYQ4BDkuzZqBG0Ze8LdF7tEges1Aw+X43yMvyvVAQxs0g+kgBEsxa48AAAD///pEKPIAAAAGSURBVAMAdcWL4XKd/AUAAAAASUVORK5CYII=",
+      "duration": 33.333333333333336,
+      "width": 16,
+      "height": 16
+    },
+    {
+      "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABBklEQVR4AYzSsU0DQRBG4T1EGwQEbsBCogRCiiACKqACKgAiiiCkBCTkBhw4oA2ks761/9Pa3pNs6XlmZ2bf7dp3UWY+XzeL8ZjeaFdgY29YPaTfFXzfbkpYPpYCa/H+dz1gVvD0fDm+LK9rP7Eu9l9/n4sR+2XpniDN19UmaSFr15F0BQZtQAxqchFXD+vB+kTw/vY/QLOFLLT9A4H7B09ZfZQCOTwVrbgK3Adto83vfnY/auRmQxVk2BHb46n760QSyJ1GxIEgxzMIA64gBg8AifkqkMCQN02cQ99V0q+CLDSTnxsnAavXtd3olQ1tvc0nQYokvU2piX4D2DMJUlB0GvEctgAAAP//qOxm5wAAAAZJREFUAwDBLKWpNb4OaQAAAABJRU5ErkJggg==",
+      "duration": 33.333333333333336,
+      "width": 16,
+      "height": 16
+    },
+    {
+      "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA/UlEQVR4AXzSwU3DQBCF4XFEGxxySAMREiVwpAhOQAVUQAXAiSI4UgISSgM55EAbSEZflCetsmss/Z6dfTNv7LVXtXB9XG3mc0alQwONo2L7IfrQ4PP6UGF7XwW5ePu9n7Bo8PB4MT9t10c98Zicbj/vmxmntIZPEPF5d8iymLV5TIYGCjUgDvasRVze7Sd5Z/D68juB2MIstHpnoMk5mLJ7qxKDqVATOgPNEZ38zde6YK/V5Fi5LZFGn88aObz0/GvgCRR6FRHtWt4ZmEKAQzMd8hGdgb+sNdHUTqXbC50BQRETjfAqgd4yNFCQBlEezr/EokEaEv08IXviHwAAAP//MoxcKgAAAAZJREFUAwAFLYmBwdfeWwAAAABJRU5ErkJggg==",
+      "duration": 33.333333333333336,
+      "width": 16,
+      "height": 16
+    },
+    {
+      "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA8klEQVR4AaSSuw3CMBRFHcQaFBRZIEJiBEqGoAImYAImACqGoGQEJJQFUqRgDaSQY7iS82wjJJBOXt7nXjs2I/fn76vBZVZ2Frte1gChHSanLsizBtd560S1dg7Iict7U0DWYLMdd7tqSt8p+uTzeJzLDkizO6AJ+7oleDALc0yyBgwiAK/uH9T64IgwWTVF0uB4eBbAcAhmQv2kASLOgVVEfXJ+ZValL5IGfJsGFLkB3tVTjAzUWNzet4AohXYSGWjLiDCx8CkSMxMZUERE/IWBAQdnRfrHqW7zgQFDXA9DAlMOEKgxEzIwQBw27TtmtvYCAAD//9HXLZEAAAAGSURBVAMAFsGIgTqYPq8AAAAASUVORK5CYII=",
+      "duration": 33.333333333333336,
+      "width": 16,
+      "height": 16
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2026-07-17T03:25:05.386Z",
+    "note": "Pygame compatible"
+  }
+}

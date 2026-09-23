@@ -1,0 +1,127 @@
+{
+  "start": {
+    "text": "老猎人皱着眉头看着你：『年轻人，你来得正好。北边森林里最近出现了一头巨熊，已经伤了好几个村民。你愿意帮我除掉它吗？』",
+    "options": [
+      {
+        "text": "『当然，我义不容辞！』（接受任务）",
+        "next_node": "accept_quest",
+        "condition_id": null,
+        "effects": {}
+      },
+      {
+        "text": "『我有什么好处？』（讨价还价）",
+        "next_node": "bargain",
+        "condition_id": null,
+        "effects": {}
+      },
+      {
+        "text": "『抱歉，我还有要事在身。』（拒绝）",
+        "next_node": "refuse",
+        "condition_id": null,
+        "effects": {}
+      }
+    ]
+  },
+  "bargain": {
+    "text": "老猎人叹了口气：『好吧，如果你能成功，我把我珍藏的『猎熊弩』送给你，那可是件宝贝。不过你得先证明你有这个本事——至少得是5级以上的猎人。』",
+    "options": [
+      {
+        "text": "『没问题，我等级够了！』",
+        "next_node": "accept_quest",
+        "condition_id": "level_ge_5",
+        "effects": {}
+      },
+      {
+        "text": "『呃……我还没那么强，还是算了吧。』",
+        "next_node": "refuse",
+        "condition_id": null,
+        "effects": {}
+      }
+    ]
+  },
+  "accept_quest": {
+    "text": "老猎人露出赞许的笑容：『好样的！那巨熊藏在森林深处的洞穴里，但洞穴很暗，你需要火把照明。另外，带上一些药水，以防万一。』",
+    "options": [
+      {
+        "text": "『好的，我准备好了！』（前往洞穴）",
+        "next_node": "cave",
+        "condition_id": "has_torch",
+        "effects": { "add_item": ["生命药水", 2] }
+      },
+      {
+        "text": "『等等，我先去准备一下。』（返回村庄）",
+        "next_node": "start",
+        "condition_id": null,
+        "effects": {}
+      }
+    ]
+  },
+  "cave": {
+    "text": "你来到黑暗的洞穴，点燃火把，看到巨熊正咆哮着扑来！你与巨熊展开搏斗……",
+    "options": [
+      {
+        "text": "『喝下药水，奋力一搏！』",
+        "next_node": "fight_win",
+        "condition_id": "has_health_potion",
+        "effects": { "modify_stat": ["health", 20] }
+      },
+      {
+        "text": "『直接冲上去！』",
+        "next_node": "fight_lose",
+        "condition_id": "level_ge_3",
+        "effects": { "modify_stat": ["health", -30] }
+      }
+    ]
+  },
+  "fight_win": {
+    "text": "你凭借药水的加持和勇猛的攻击，成功击杀了巨熊！你带着熊皮回到村庄，老猎人激动地兑现了承诺，将『猎熊弩』送给了你。",
+    "options": [
+      {
+        "text": "『谢谢你，老猎人！』（完成任务）",
+        "next_node": "quest_done",
+        "condition_id": null,
+        "effects": {
+          "add_item": ["猎熊弩", 1],
+          "complete_quest": "猎杀巨熊"
+        }
+      }
+    ]
+  },
+  "fight_lose": {
+    "text": "你冲得太猛，被巨熊一掌拍飞，受了重伤。你勉强逃回村庄，老猎人见状赶紧给你包扎。『唉，看来你还需要磨练。』",
+    "options": [
+      {
+        "text": "『我……我会再去练练的。』（结束对话）",
+        "next_node": "exit",
+        "condition_id": null,
+        "effects": { "modify_stat": ["health", -10] }
+      }
+    ]
+  },
+  "refuse": {
+    "text": "老猎人失望地摇摇头：『好吧，那我自己想办法。愿你在旅途中平安。』",
+    "options": [
+      {
+        "text": "『再见。』",
+        "next_node": "exit",
+        "condition_id": null,
+        "effects": {}
+      }
+    ]
+  },
+  "quest_done": {
+    "text": "老猎人拍了拍你的肩膀：『好小子，你果然有实力！这弩就归你了，以后常来坐坐。』",
+    "options": [
+      {
+        "text": "『一定！』（结束）",
+        "next_node": "exit",
+        "condition_id": null,
+        "effects": {}
+      }
+    ]
+  },
+  "exit": {
+    "text": "对话结束。",
+    "options": []
+  }
+}

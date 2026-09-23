@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>对话树可视化编辑器 - 新版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #1e1e2e; overflow: hidden; height: 100vh; touch-action: none; }
+        .toolbar {
+            position: fixed; top: 0; left: 0; right: 0; height: 56px;
+            background: #2d2d44; display: flex; align-items: center;
+            padding: 0 12px; gap: 8px; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            border-bottom: 2px solid #3d3d5c;
+            overflow-x: auto; flex-wrap: nowrap;
+        }
+        .toolbar .title { color: #cdd6f4; font-size: 16px; font-weight: 600; margin-right: 10px; white-space: nowrap; }
+        .toolbar button {
+            padding: 6px 14px; border: none; border-radius: 6px;
+            font-size: 12px; font-weight: 500; cursor: pointer;
+            background: #45456a; color: #cdd6f4;
+            white-space: nowrap; touch-action: manipulation;
+            transition: transform 0.1s;
+        }
+        .toolbar button:active { transform: scale(0.95); }
+        .btn-primary { background: #89b4fa !important; color: #1e1e2e !important; }
+        .btn-success { background: #a6e3a1 !important; color: #1e1e2e !important; }
+        .btn-danger { background: #f38ba8 !important; color: #1e1e2e !important; }
+        .btn-warning { background: #f9e2af !important; color: #1e1e2e !important; }
+        .btn-secondary { background: #6c7086 !important; color: #cdd6f4 !important; }
+        .toolbar .spacer { flex: 1; min-width: 10px; }
+        #canvas {
+            position: fixed; top: 56px; left: 0; right: 0; bottom: 0;
+            background: #1e1e2e;
+            cursor: grab; touch-action: none;
+        }
+        #canvas:active { cursor: grabbing; }
+        .node {
+            position: absolute; min-width: 180px; max-width: 280px;
+            background: #313244; border-radius: 12px;
+            border: 2px solid #45456a;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            cursor: grab; touch-action: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .node:hover { border-color: #89b4fa; box-shadow: 0 4px 30px rgba(137,180,250,0.15); }
+        .node.selected { border-color: #89b4fa; box-shadow: 0 0 0 3px rgba(137,180,250,0.3); }
+        .node.drag-over { border-color: #a6e3a1; box-shadow: 0 0 20px rgba(166,227,161,0.5); }
+        .node-header {
+            padding: 8px 12px; background: #45456a; border-radius: 10px 10px 0 0;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: grab; touch-action: none; min-height: 36px;
+        }
+        .node-header .node-id {
+            color: #cdd6f4; font-weight: 600; font-size: 12px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 120px;
+        }
+        .node-header .node-badge {
+            font-size: 9px; padding: 1px 8px; border-radius: 12px;
+            background: #6c7086; color: #cdd6f4; white-space: nowrap;
+        }
+        .node-header .node-badge.start { background: #a6e3a1; color: #1e1e2e; }
+        .node-header .node-badge.exit { background: #f38ba8; color: #1e1e2e; }
+        .node-header .node-badge.condition { background: #f9e2af; color: #1e1e2e; }
+        .node-header .node-actions { display: flex; gap: 4px; }
+        .node-header .node-actions button {
+            background: none; border: none; color: #cdd6f4;
+            cursor: pointer; font-size: 16px; padding: 0 4px;
+            opacity: 0.6; transition: opacity 0.2s;
+            touch-action: manipulation;
+            min-width: 24px; min-height: 24px;
+        }
+        .node-header .node-actions button:active { opacity: 1; }
+        .node-body { padding: 8px 12px; }
+        .node-body .node-text {
+            color: #cdd6f4; font-size: 13px; line-height: 1.4;
+            word-break: break-word; min-height: 24px;
+            outline: none; background: transparent; border: none;
+            width: 100%; resize: none; font-family: inherit;
+            cursor: text; -webkit-user-select: text; user-select: text;
+        }
+        .node-body .node-text:focus { outline: 2px solid #89b4fa; outline-offset: 2px; border-radius: 4px; }
+        .node-outputs {
+            padding: 0 12px 10px 12px;
+            display: flex; flex-direction: column; gap: 4px;
+        }
+        .output-port {
+            display: flex; align-items: center; gap: 6px;
+            padding: 4px 8px; background: #45456a; border-radius: 6px;
+            cursor: pointer; transition: background 0.2s;
+            touch-action: none; min-height: 32px;
+        }
+        .output-port:hover { background: #585b78; }
+        .output-port .port-dot {
+            width: 16px; height: 16px; border-radius: 50%;
+            background: #89b4fa; border: 2px solid #6c7086;
+            flex-shrink: 0; transition: transform 0.2s, box-shadow 0.2s;
+            touch-action: none;
+        }
+        .output-port .port-dot.highlight {
+            transform: scale(1.4);
+            box-shadow: 0 0 16px #89b4fa;
+        }
+        .output-port .port-text {
+            color: #cdd6f4; font-size: 11px; flex: 1;
+            outline: none; background: transparent; border: none;
+            padding: 2px 0; font-family: inherit;
+            cursor: text; -webkit-user-select: text; user-select: text;
+            min-width: 40px;
+        }
+        .output-port .port-text:focus { outline: 2px solid #89b4fa; outline-offset: 2px; border-radius: 4px; }
+        .output-port .port-next {
+            color: #6c7086; font-size: 10px;
+            white-space: nowrap; max-width: 60px;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .output-port .port-cond {
+            color: #f9e2af; font-size: 9px;
+            background: #2d2d44; padding: 0 6px; border-radius: 4px;
+            white-space: nowrap; max-width: 60px;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .output-port .port-delete {
+            background: none; border: none; color: #6c7086;
+            cursor: pointer; font-size: 12px; padding: 0 4px;
+            opacity: 0.4; transition: opacity 0.2s;
+            touch-action: manipulation; min-width: 20px; min-height: 20px;
+        }
+        .output-port .port-delete:active { opacity: 1; color: #f38ba8; }
+        .connection-line {
+            position: absolute; pointer-events: none; z-index: 1;
+        }
+        .connection-line line {
+            stroke: #89b4fa; stroke-width: 3; stroke-linecap: round;
+            stroke-dasharray: 8 4;
+            animation: dashFlow 1s linear infinite;
+            filter: drop-shadow(0 0 6px rgba(137,180,250,0.3));
+        }
+        @keyframes dashFlow {
+            to { stroke-dashoffset: -24; }
+        }
+        .connection-line .connection-label {
+            font-size: 11px; font-weight: 600;
+            fill: #1e1e2e;
+            stroke: #f9e2af;
+            stroke-width: 4;
+            paint-order: stroke;
+            text-shadow: 0 0 8px #f9e2af;
+            pointer-events: none;
+        }
+        .add-node-panel {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: #313244; border-radius: 12px; padding: 16px 20px;
+            border: 2px solid #45456a; display: none; gap: 8px;
+            z-index: 999; box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+            width: 90%; max-width: 400px; flex-wrap: wrap; justify-content: center;
+        }
+        .add-node-panel.show { display: flex; }
+        .add-node-panel input {
+            padding: 8px 12px; border-radius: 6px; border: 2px solid #45456a;
+            background: #1e1e2e; color: #cdd6f4; font-size: 14px;
+            flex: 1; min-width: 150px; -webkit-user-select: text; user-select: text;
+        }
+        .add-node-panel input:focus { outline: none; border-color: #89b4fa; }
+        .add-node-panel button {
+            padding: 8px 16px; border: none; border-radius: 6px;
+            font-weight: 500; cursor: pointer; touch-action: manipulation;
+            font-size: 13px;
+        }
+        .add-node-panel button:active { transform: scale(0.95); }
+        .properties-panel {
+            position: fixed; right: 0; top: 56px; bottom: 0;
+            width: 320px; background: #313244; border-left: 2px solid #45456a;
+            padding: 16px; overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 100;
+            -webkit-overflow-scrolling: touch;
+        }
+        .properties-panel.show { transform: translateX(0); }
+        .properties-panel h3 { color: #cdd6f4; margin-bottom: 12px; font-size: 15px; }
+        .properties-panel .prop-group { margin-bottom: 12px; }
+        .properties-panel .prop-group label {
+            display: block; color: #6c7086; font-size: 11px; margin-bottom: 4px;
+        }
+        .properties-panel .prop-group input,
+        .properties-panel .prop-group textarea {
+            width: 100%; padding: 6px 10px; border-radius: 6px;
+            border: 2px solid #45456a; background: #1e1e2e; color: #cdd6f4;
+            font-size: 13px; font-family: inherit;
+            -webkit-user-select: text; user-select: text;
+        }
+        .properties-panel .prop-group textarea { min-height: 50px; resize: vertical; }
+        .properties-panel .prop-group input:focus,
+        .properties-panel .prop-group textarea:focus { outline: none; border-color: #89b4fa; }
+        .properties-panel .close-panel {
+            position: absolute; top: 8px; right: 12px;
+            background: none; border: none; color: #6c7086;
+            font-size: 22px; cursor: pointer; touch-action: manipulation;
+            padding: 4px 8px;
+        }
+        .properties-panel .close-panel:active { color: #cdd6f4; }
+        .properties-panel .delete-btn {
+            width: 100%; padding: 10px; border: none; border-radius: 6px;
+            background: #f38ba8; color: #1e1e2e; font-weight: 600;
+            cursor: pointer; touch-action: manipulation; font-size: 13px;
+        }
+        .properties-panel .delete-btn:active { transform: scale(0.97); }
+        /* 选项编辑区 */
+        .option-editor {
+            background: #2d2d44; border-radius: 8px; padding: 10px;
+            margin-bottom: 10px; border: 1px solid #45456a;
+        }
+        .option-editor .opt-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+        .option-editor .opt-row label { color: #6c7086; font-size: 10px; min-width: 50px; }
+        .option-editor .opt-row input { flex: 1; }
+        .option-editor .opt-row .opt-delete {
+            background: none; border: none; color: #f38ba8;
+            cursor: pointer; font-size: 14px; padding: 0 4px;
+        }
+        @media (max-width: 768px) {
+            .toolbar .title { font-size: 12px; }
+            .toolbar button { font-size: 10px; padding: 4px 10px; }
+            .node { min-width: 140px; max-width: 220px; }
+            .node-header .node-id { font-size: 11px; max-width: 80px; }
+            .node-body .node-text { font-size: 12px; }
+            .properties-panel { width: 100%; max-width: 320px; }
+        }
+        @media (max-width: 480px) {
+            .toolbar { height: 48px; padding: 0 6px; gap: 4px; }
+            #canvas { top: 48px; }
+            .toolbar .title { font-size: 11px; margin-right: 4px; }
+            .toolbar button { font-size: 9px; padding: 3px 8px; }
+            .node { min-width: 120px; max-width: 180px; }
+            .add-node-panel { padding: 12px 16px; bottom: 60px; }
+        }
+        .toast-notification {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            padding: 10px 20px; border-radius: 8px;
+            color: #1e1e2e; font-weight: 500; font-size: 13px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+            z-index: 9999; transition: all 0.3s ease;
+            animation: slideUp 0.3s ease;
+            max-width: 90%; text-align: center; pointer-events: none;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="toolbar">
+    <span class="title">🧩 对话树编辑器 (新格式)</span>
+    <button class="btn-primary" onclick="addNode()">➕ 节点</button>
+    <button class="btn-success" onclick="exportJSON()">📤 导出</button>
+    <button class="btn-warning" onclick="document.getElementById('fileInput').click()">📥 导入</button>
+    <input type="file" id="fileInput" accept=".json" style="display:none" onchange="importFromFile(event)">
+    <button class="btn-danger" onclick="clearAll()">🗑️ 清空</button>
+    <button class="btn-secondary" onclick="loadSample()">📋 示例</button>
+    <span class="spacer"></span>
+    <span class="hint" id="hintText">🖱️ 拖拽 · 连线</span>
+</div>
+<div id="canvas"></div>
+<div class="properties-panel" id="propertiesPanel">
+    <button class="close-panel" onclick="closeProperties()">✕</button>
+    <h3 id="propNodeId">节点属性</h3>
+    <div class="prop-group">
+        <label>节点文本</label>
+        <textarea id="propText" oninput="updateNodeText()"></textarea>
+    </div>
+    <div class="prop-group">
+        <label>节点 ID（只读）</label>
+        <input type="text" id="propId" disabled>
+    </div>
+    <div class="prop-group">
+        <label>节点类型</label>
+        <select id="propType" onchange="updateNodeType()">
+            <option value="normal">普通</option>
+            <option value="condition">条件判断</option>
+        </select>
+    </div>
+    <div class="prop-group">
+        <label>选项列表（点击选项可编辑）</label>
+        <div id="optionsEditor"></div>
+        <button class="btn-primary" onclick="addOptionToSelected()" style="width:100%;margin-top:8px;">➕ 添加选项</button>
+    </div>
+    <button class="delete-btn" onclick="deleteSelectedNode()">🗑️ 删除此节点</button>
+</div>
+<div class="add-node-panel" id="addNodePanel">
+    <input type="text" id="newNodeText" placeholder="输入节点文本..." onkeydown="if(event.key==='Enter') confirmAddNode()">
+    <button class="btn-primary" onclick="confirmAddNode()">确认</button>
+    <button onclick="closeAddPanel()" style="background:#45456a; color:#cdd6f4;">取消</button>
+</div>
+<script>
+    // ============================================================
+    // 数据
+    // ============================================================
+    let nodes = {};       // { id: { x, y, text, type, outputs: [ {text, next, condition_id, effects} ] } }
+    let connections = [];
+    let selectedNodeId = null;
+    let offsetX = 0, offsetY = 0;
+    let dragState = null;
+    let connectionStart = null;
+    let isPanning = false;
+    let panStart = null;
+
+    // ============================================================
+    // 工具函数
+    // ============================================================
+    function generateNodeId() {
+        const ts = Date.now().toString(36);
+        const rand = Math.random().toString(36).slice(2, 6);
+        return `node_${ts}_${rand}`;
+    }
+
+    function getNodeIds() { return Object.keys(nodes); }
+
+    // ============================================================
+    // 初始化 & 示例
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSample();
+        setupCanvasEvents();
+        render();
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            document.getElementById('hintText').textContent = '👆 双指平移 · 拖拽连线';
+        }
+    });
+
+    // ============================================================
+    // 渲染引擎
+    // ============================================================
+    function render() {
+        const canvas = document.getElementById('canvas');
+        canvas.querySelectorAll('.node').forEach(n => n.remove());
+        canvas.querySelectorAll('.connection-line').forEach(l => l.remove());
+
+        Object.keys(nodes).forEach(id => {
+            const node = nodes[id];
+            const el = createNodeElement(id, node);
+            canvas.appendChild(el);
+        });
+
+        connections.forEach(conn => {
+            const fromNode = nodes[conn.fromNode];
+            const toNode = nodes[conn.toNode];
+            if (!fromNode || !toNode) return;
+            const fromPort = getPortPosition(conn.fromNode, conn.fromIndex);
+            const toPort = getPortPosition(conn.toNode, -1);
+            if (fromPort && toPort) {
+                const line = createLineElement(fromPort, toPort, conn);
+                canvas.appendChild(line);
+            }
+        });
+        updateZIndex();
+    }
+
+    function createNodeElement(id, node) {
+        const el = document.createElement('div');
+        el.className = 'node' + (id === selectedNodeId ? ' selected' : '');
+        el.dataset.nodeId = id;
+        el.style.left = (node.x + offsetX) + 'px';
+        el.style.top = (node.y + offsetY) + 'px';
+
+        const header = document.createElement('div');
+        header.className = 'node-header';
+        const idSpan = document.createElement('span');
+        idSpan.className = 'node-id';
+        idSpan.textContent = id;
+        const badge = document.createElement('span');
+        badge.className = 'node-badge';
+        if (id === 'start') badge.className += ' start';
+        else if (id === 'exit') badge.className += ' exit';
+        else if (node.type === 'condition') badge.className += ' condition';
+        badge.textContent = id === 'start' ? '⭐' : id === 'exit' ? '🚪' : node.type === 'condition' ? '❓' : '节点';
+
+        const actions = document.createElement('div');
+        actions.className = 'node-actions';
+        const addBtn = document.createElement('button');
+        addBtn.textContent = '+';
+        addBtn.title = '添加选项';
+        addBtn.onclick = (e) => { e.stopPropagation(); addOutput(id); };
+        addBtn.ontouchstart = (e) => { e.stopPropagation(); addOutput(id); e.preventDefault(); };
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '×';
+        delBtn.title = '删除节点';
+        delBtn.onclick = (e) => { e.stopPropagation(); deleteNode(id); };
+        delBtn.ontouchstart = (e) => { e.stopPropagation(); deleteNode(id); e.preventDefault(); };
+        if (id === 'start' || id === 'exit') delBtn.style.display = 'none';
+        actions.appendChild(addBtn);
+        actions.appendChild(delBtn);
+        header.appendChild(idSpan);
+        header.appendChild(badge);
+        header.appendChild(actions);
+
+        const body = document.createElement('div');
+        body.className = 'node-body';
+        const textArea = document.createElement('div');
+        textArea.className = 'node-text';
+        textArea.contentEditable = true;
+        textArea.textContent = node.text || '双击编辑...';
+        textArea.oninput = () => { node.text = textArea.textContent; };
+        textArea.onclick = (e) => e.stopPropagation();
+        body.appendChild(textArea);
+
+        const outputs = document.createElement('div');
+        outputs.className = 'node-outputs';
+        (node.outputs || []).forEach((output, index) => {
+            const port = createPortElement(id, index, output);
+            outputs.appendChild(port);
+        });
+
+        el.appendChild(header);
+        el.appendChild(body);
+        el.appendChild(outputs);
+
+        el.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.port-dot') || e.target.closest('.port-text') ||
+                e.target.closest('.node-text') || e.target.closest('button')) return;
+            selectNode(id);
+            startDrag(e, id);
+        });
+        el.addEventListener('dblclick', (e) => {
+            if (e.target.closest('.port-text') || e.target.closest('.node-text')) return;
+            openProperties(id);
+        });
+        el.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            if (e.target.closest('.port-dot') || e.target.closest('.port-text') ||
+                e.target.closest('.node-text') || e.target.closest('button')) return;
+            selectNode(id);
+            startDragTouch(touch, id);
+            e.preventDefault();
+        }, { passive: false });
+
+        return el;
+    }
+
+    function createPortElement(nodeId, index, output) {
+        const port = document.createElement('div');
+        port.className = 'output-port';
+
+        const dot = document.createElement('div');
+        dot.className = 'port-dot';
+        dot.title = '拖拽连线';
+
+        const text = document.createElement('span');
+        text.className = 'port-text';
+        text.contentEditable = true;
+        text.textContent = output.text || '选项';
+        text.oninput = () => { output.text = text.textContent; };
+        text.onclick = (e) => e.stopPropagation();
+
+        const nextLabel = document.createElement('span');
+        nextLabel.className = 'port-next';
+        nextLabel.textContent = output.next ? `→ ${output.next}` : '';
+
+        const condLabel = document.createElement('span');
+        condLabel.className = 'port-cond';
+        condLabel.textContent = output.condition_id || '';
+        condLabel.title = '条件ID';
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'port-delete';
+        delBtn.textContent = '✕';
+        delBtn.title = '删除此选项';
+        delBtn.onclick = (e) => { e.stopPropagation(); removeOutput(nodeId, index); };
+        delBtn.ontouchstart = (e) => { e.stopPropagation(); removeOutput(nodeId, index); e.preventDefault(); };
+
+        port.appendChild(dot);
+        port.appendChild(text);
+        port.appendChild(nextLabel);
+        port.appendChild(condLabel);
+        port.appendChild(delBtn);
+
+        // 鼠标连线
+        dot.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            startConnection(nodeId, index);
+        });
+        // 触摸连线
+        dot.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            const touch = e.touches[0];
+            startConnectionTouch(touch, nodeId, index);
+            e.preventDefault();
+        }, { passive: false });
+
+        // 悬停高亮端口
+        port.addEventListener('mouseenter', () => {
+            dot.classList.add('highlight');
+        });
+        port.addEventListener('mouseleave', () => {
+            dot.classList.remove('highlight');
+        });
+
+        return port;
+    }
+
+    function createLineElement(from, to, conn) {
+        const container = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        container.setAttribute('class', 'connection-line');
+        container.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1;';
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', from.x);
+        line.setAttribute('y1', from.y);
+        line.setAttribute('x2', to.x);
+        line.setAttribute('y2', to.y);
+
+        const output = nodes[conn.fromNode]?.outputs?.[conn.fromIndex];
+        let labelText = '';
+        if (output) {
+            const cond = output.condition_id || '';
+            const effs = Object.keys(output.effects || {});
+            if (cond) labelText += `条件:${cond}`;
+            if (effs.length) labelText += (labelText ? ' | ' : '') + '效果:' + effs.join(',');
+            if (labelText.length > 25) labelText = labelText.slice(0, 23) + '…';
+        }
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        const midX = (from.x + to.x) / 2;
+        const midY = (from.y + to.y) / 2 - 10;
+        label.setAttribute('x', midX);
+        label.setAttribute('y', midY);
+        label.setAttribute('class', 'connection-label');
+        label.textContent = labelText;
+        label.setAttribute('text-anchor', 'middle');
+
+        container.appendChild(line);
+        if (labelText) container.appendChild(label);
+        return container;
+    }
+
+    function getPortPosition(nodeId, index) {
+        const nodeEl = document.querySelector(`.node[data-node-id="${nodeId}"]`);
+        if (!nodeEl) return null;
+        const rect = nodeEl.getBoundingClientRect();
+        const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+        if (index === -1) {
+            return { x: rect.left - canvasRect.left + rect.width/2, y: rect.top - canvasRect.top };
+        }
+        const ports = nodeEl.querySelectorAll('.output-port');
+        if (index >= ports.length) return null;
+        const portRect = ports[index].getBoundingClientRect();
+        return { x: portRect.right - canvasRect.left, y: portRect.top - canvasRect.top + portRect.height/2 };
+    }
+
+    function updateZIndex() {
+        document.querySelectorAll('.node').forEach((el, i) => el.style.zIndex = i + 2);
+    }
+
+    // ============================================================
+    // 交互事件（鼠标 + 触屏）
+    // ============================================================
+    function setupCanvasEvents() {
+        const canvas = document.getElementById('canvas');
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.target === canvas || e.target.id === 'canvas') {
+                isPanning = true;
+                panStart = { x: e.clientX, y: e.clientY };
+                canvas.style.cursor = 'grabbing';
+            }
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (isPanning && panStart) {
+                offsetX += e.clientX - panStart.x;
+                offsetY += e.clientY - panStart.y;
+                panStart = { x: e.clientX, y: e.clientY };
+                render();
+            }
+            if (dragState) {
+                const node = nodes[dragState.nodeId];
+                if (node) {
+                    node.x = dragState.origX + (e.clientX - dragState.startX);
+                    node.y = dragState.origY + (e.clientY - dragState.startY);
+                    render();
+                }
+            }
+            if (connectionStart) {
+                updateTempLine(e.clientX, e.clientY);
+                const target = getNodeAt(e.clientX, e.clientY);
+                document.querySelectorAll('.node').forEach(el => {
+                    el.classList.toggle('drag-over', el.dataset.nodeId === target);
+                });
+            }
+        });
+        document.addEventListener('mouseup', (e) => {
+            if (isPanning) { isPanning = false; canvas.style.cursor = 'grab'; panStart = null; }
+            if (dragState) dragState = null;
+            if (connectionStart) {
+                finishConnection(e.clientX, e.clientY);
+                document.querySelectorAll('.node').forEach(el => el.classList.remove('drag-over'));
+            }
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            if (e.target === canvas || e.target.id === 'canvas') {
+                isPanning = true;
+                panStart = { x: touch.clientX, y: touch.clientY };
+            }
+            e.preventDefault();
+        }, { passive: false });
+        document.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            if (isPanning && panStart) {
+                offsetX += touch.clientX - panStart.x;
+                offsetY += touch.clientY - panStart.y;
+                panStart = { x: touch.clientX, y: touch.clientY };
+                render();
+            }
+            if (dragState) {
+                const node = nodes[dragState.nodeId];
+                if (node) {
+                    node.x = dragState.origX + (touch.clientX - dragState.startX);
+                    node.y = dragState.origY + (touch.clientY - dragState.startY);
+                    render();
+                }
+            }
+            if (connectionStart) {
+                updateTempLine(touch.clientX, touch.clientY);
+                const target = getNodeAt(touch.clientX, touch.clientY);
+                document.querySelectorAll('.node').forEach(el => {
+                    el.classList.toggle('drag-over', el.dataset.nodeId === target);
+                });
+            }
+            e.preventDefault();
+        }, { passive: false });
+        document.addEventListener('touchend', (e) => {
+            if (isPanning) { isPanning = false; panStart = null; }
+            if (dragState) dragState = null;
+            if (connectionStart) {
+                const touch = e.changedTouches[0];
+                if (touch) finishConnection(touch.clientX, touch.clientY);
+                document.querySelectorAll('.node').forEach(el => el.classList.remove('drag-over'));
+            }
+        }, { passive: false });
+    }
+
+    function getNodeAt(clientX, clientY) {
+        const els = document.elementsFromPoint(clientX, clientY);
+        for (const el of els) {
+            const node = el.closest?.('.node');
+            if (node) return node.dataset.nodeId;
+        }
+        return null;
+    }
+
+    function startDrag(e, nodeId) {
+        dragState = { nodeId, startX: e.clientX, startY: e.clientY, origX: nodes[nodeId].x, origY: nodes[nodeId].y };
+    }
+    function startDragTouch(touch, nodeId) {
+        dragState = { nodeId, startX: touch.clientX, startY: touch.clientY, origX: nodes[nodeId].x, origY: nodes[nodeId].y };
+    }
+    function startConnection(nodeId, index) {
+        connectionStart = { nodeId, index };
+        document.getElementById('canvas').style.cursor = 'crosshair';
+        showToast('拖拽到目标节点释放', 'info');
+    }
+    function startConnectionTouch(touch, nodeId, index) {
+        connectionStart = { nodeId, index };
+        showToast('拖拽到目标节点释放', 'info');
+    }
+
+    function updateTempLine(clientX, clientY) {
+        const fromPos = getPortPosition(connectionStart.nodeId, connectionStart.index);
+        if (!fromPos) return;
+        let temp = document.querySelector('.temp-connection');
+        if (!temp) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'temp-connection');
+            svg.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:999;';
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('id', 'temp-line');
+            line.setAttribute('stroke', '#a6e3a1');
+            line.setAttribute('stroke-width', '3');
+            line.setAttribute('stroke-dasharray', '8 4');
+            line.setAttribute('opacity', '0.8');
+            svg.appendChild(line);
+            document.getElementById('canvas').appendChild(svg);
+            temp = svg;
+        }
+        const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+        const line = temp.querySelector('#temp-line');
+        const endX = clientX - canvasRect.left;
+        const endY = clientY - canvasRect.top;
+        line.setAttribute('x1', fromPos.x);
+        line.setAttribute('y1', fromPos.y);
+        line.setAttribute('x2', endX);
+        line.setAttribute('y2', endY);
+    }
+
+    function finishConnection(clientX, clientY) {
+        const targetId = getNodeAt(clientX, clientY);
+        if (targetId && targetId !== connectionStart.nodeId) {
+            const existing = connections.find(c => c.fromNode === connectionStart.nodeId && c.fromIndex === connectionStart.index);
+            if (existing) existing.toNode = targetId;
+            else connections.push({ fromNode: connectionStart.nodeId, fromIndex: connectionStart.index, toNode: targetId });
+            const node = nodes[connectionStart.nodeId];
+            if (node && node.outputs[connectionStart.index]) {
+                node.outputs[connectionStart.index].next = targetId;
+            }
+            render();
+            const targetEl = document.querySelector(`.node[data-node-id="${targetId}"]`);
+            if (targetEl) {
+                targetEl.style.transition = 'box-shadow 0.2s';
+                targetEl.style.boxShadow = '0 0 30px #a6e3a1';
+                setTimeout(() => { targetEl.style.boxShadow = ''; }, 500);
+            }
+            showToast(`已连接到 ${targetId}`, 'success');
+        } else {
+            showToast('未连接到有效节点', 'error');
+        }
+        document.querySelector('.temp-connection')?.remove();
+        document.getElementById('canvas').style.cursor = 'grab';
+        connectionStart = null;
+    }
+
+    // ============================================================
+    // 节点操作
+    // ============================================================
+    function addNode() {
+        document.getElementById('addNodePanel').classList.add('show');
+        document.getElementById('newNodeText').focus();
+    }
+    function closeAddPanel() {
+        document.getElementById('addNodePanel').classList.remove('show');
+        document.getElementById('newNodeText').value = '';
+    }
+    function confirmAddNode() {
+        const text = document.getElementById('newNodeText').value.trim() || '新节点';
+        const id = generateNodeId();
+        nodes[id] = {
+            x: 100 + Math.random() * 300,
+            y: 100 + Math.random() * 300,
+            text: text,
+            type: 'normal',
+            outputs: []
+        };
+        closeAddPanel();
+        selectNode(id);
+        render();
+        showToast(`节点 "${id}" 已创建`, 'success');
+    }
+
+    function deleteNode(id) {
+        if (id === 'start') { showToast('不能删除起始节点', 'error'); return; }
+        if (id === 'exit') { showToast('不能删除退出节点', 'error'); return; }
+        if (!confirm(`确定删除节点 "${id}" 吗？`)) return;
+        connections = connections.filter(c => c.fromNode !== id && c.toNode !== id);
+        Object.keys(nodes).forEach(key => {
+            nodes[key].outputs?.forEach(o => { if (o.next === id) o.next = ''; });
+        });
+        delete nodes[id];
+        if (selectedNodeId === id) selectedNodeId = null;
+        closeProperties();
+        render();
+        showToast(`节点 "${id}" 已删除`, 'success');
+    }
+    function deleteSelectedNode() { if (selectedNodeId) deleteNode(selectedNodeId); }
+
+    function selectNode(id) {
+        selectedNodeId = id;
+        document.querySelectorAll('.node').forEach(el => el.classList.toggle('selected', el.dataset.nodeId === id));
+        // 如果属性面板打开，刷新内容
+        if (document.getElementById('propertiesPanel').classList.contains('show')) {
+            openProperties(id);
+        }
+    }
+
+    function addOutput(nodeId) {
+        const node = nodes[nodeId];
+        if (!node) return;
+        if (!node.outputs) node.outputs = [];
+        node.outputs.push({ text: `选项 ${node.outputs.length+1}`, next: '', condition_id: '', effects: {} });
+        render();
+        // 如果当前节点被选中，刷新属性面板
+        if (selectedNodeId === nodeId && document.getElementById('propertiesPanel').classList.contains('show')) {
+            openProperties(nodeId);
+        }
+        showToast('选项已添加', 'success');
+    }
+    function removeOutput(nodeId, index) {
+        const node = nodes[nodeId];
+        if (!node || !node.outputs) return;
+        connections = connections.filter(c => !(c.fromNode === nodeId && c.fromIndex === index));
+        node.outputs.splice(index, 1);
+        render();
+        if (selectedNodeId === nodeId && document.getElementById('propertiesPanel').classList.contains('show')) {
+            openProperties(nodeId);
+        }
+        showToast('选项已删除', 'success');
+    }
+
+    // ============================================================
+    // 属性面板 (新: 支持编辑选项的 condition_id 和 effects)
+    // ============================================================
+    function openProperties(id) {
+        const node = nodes[id];
+        if (!node) return;
+        selectedNodeId = id;
+        document.getElementById('propertiesPanel').classList.add('show');
+        document.getElementById('propNodeId').textContent = `📝 ${id}`;
+        document.getElementById('propText').value = node.text || '';
+        document.getElementById('propId').value = id;
+        document.getElementById('propType').value = node.type || 'normal';
+        renderOptionsEditor(id);
+    }
+    function closeProperties() { document.getElementById('propertiesPanel').classList.remove('show'); }
+    function updateNodeText() {
+        if (!selectedNodeId || !nodes[selectedNodeId]) return;
+        nodes[selectedNodeId].text = document.getElementById('propText').value;
+        render();
+    }
+    function updateNodeType() {
+        if (!selectedNodeId || !nodes[selectedNodeId]) return;
+        nodes[selectedNodeId].type = document.getElementById('propType').value;
+        render();
+    }
+
+    function renderOptionsEditor(nodeId) {
+        const container = document.getElementById('optionsEditor');
+        const node = nodes[nodeId];
+        if (!node) { container.innerHTML = ''; return; }
+        container.innerHTML = '';
+        node.outputs.forEach((opt, idx) => {
+            const div = document.createElement('div');
+            div.className = 'option-editor';
+            const row1 = document.createElement('div');
+            row1.className = 'opt-row';
+            row1.innerHTML = `<label>文本</label><input type="text" value="${escapeHtml(opt.text)}" data-idx="${idx}" data-field="text">`;
+            const row2 = document.createElement('div');
+            row2.className = 'opt-row';
+            row2.innerHTML = `<label>目标</label>
+                              <select data-idx="${idx}" data-field="next">
+                                <option value="">(未连接)</option>
+                                ${Object.keys(nodes).map(nid => `<option value="${nid}" ${nid===opt.next?'selected':''}>${nid}</option>`).join('')}
+                              </select>`;
+            const row3 = document.createElement('div');
+            row3.className = 'opt-row';
+            row3.innerHTML = `<label>条件ID</label><input type="text" value="${escapeHtml(opt.condition_id||'')}" data-idx="${idx}" data-field="condition_id" placeholder="例如 has_torch">`;
+            const row4 = document.createElement('div');
+            row4.className = 'opt-row';
+            row4.innerHTML = `<label>效果</label><input type="text" value="${escapeHtml(JSON.stringify(opt.effects||{}))}" data-idx="${idx}" data-field="effects" placeholder='{"add_item":["火把",1]}'>`;
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'opt-delete';
+            delBtn.textContent = '✕';
+            delBtn.onclick = () => removeOutput(nodeId, idx);
+
+            const rowDel = document.createElement('div');
+            rowDel.className = 'opt-row';
+            rowDel.style.justifyContent = 'flex-end';
+            rowDel.appendChild(delBtn);
+
+            div.appendChild(row1);
+            div.appendChild(row2);
+            div.appendChild(row3);
+            div.appendChild(row4);
+            div.appendChild(rowDel);
+            container.appendChild(div);
+        });
+
+        // 绑定输入事件
+        container.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('change', (e) => {
+                const idx = parseInt(el.dataset.idx);
+                const field = el.dataset.field;
+                const val = el.value;
+                if (field === 'effects') {
+                    try { node.outputs[idx].effects = JSON.parse(val); } catch(e) { /* 保持原样 */ }
+                } else if (field === 'text') {
+                    node.outputs[idx].text = val;
+                } else if (field === 'condition_id') {
+                    node.outputs[idx].condition_id = val || '';
+                } else if (field === 'next') {
+                    node.outputs[idx].next = val;
+                    // 更新 connections
+                    const fromIdx = connections.findIndex(c => c.fromNode === nodeId && c.fromIndex === idx);
+                    if (val && nodes[val]) {
+                        if (fromIdx >= 0) connections[fromIdx].toNode = val;
+                        else connections.push({ fromNode: nodeId, fromIndex: idx, toNode: val });
+                    } else {
+                        if (fromIdx >= 0) connections.splice(fromIdx, 1);
+                    }
+                }
+                render();
+                // 刷新属性面板以更新选项显示
+                if (selectedNodeId === nodeId) openProperties(nodeId);
+            });
+            // 对输入框实时更新
+            if (el.tagName === 'INPUT' && el.dataset.field !== 'effects') {
+                el.addEventListener('input', (e) => {
+                    const idx = parseInt(el.dataset.idx);
+                    const field = el.dataset.field;
+                    const val = el.value;
+                    if (field === 'text') node.outputs[idx].text = val;
+                    else if (field === 'condition_id') node.outputs[idx].condition_id = val || '';
+                    render();
+                });
+            }
+        });
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function addOptionToSelected() {
+        if (selectedNodeId) addOutput(selectedNodeId);
+    }
+
+    // ============================================================
+    // 导入/导出 (新格式)
+    // ============================================================
+    function exportJSON() {
+        const data = buildDialogueData();
+        const json = JSON.stringify(data, null, 2);
+        if (navigator.clipboard) navigator.clipboard.writeText(json).catch(()=>{});
+        try {
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'dialogue_tree.json';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 5000);
+        } catch(e) {}
+        showToast('✅ JSON 已导出并复制', 'success');
+    }
+
+    function buildDialogueData() {
+        const data = {};
+        Object.keys(nodes).forEach(id => {
+            const node = nodes[id];
+            data[id] = {
+                text: node.text || '',
+                type: node.type || 'normal',
+                options: (node.outputs || []).map(o => ({
+                    text: o.text || '选项',
+                    next_node: o.next || '',
+                    condition_id: o.condition_id || null,
+                    effects: o.effects || {}
+                }))
+            };
+        });
+        return data;
+    }
+
+    function importFromFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (!data.start) { showToast('缺少起始节点 "start"', 'error'); return; }
+                loadFromData(data);
+                showToast('✅ 文件导入成功', 'success');
+            } catch(err) { showToast('文件解析失败: ' + err.message, 'error'); }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    function loadFromData(data) {
+        nodes = {}; connections = []; selectedNodeId = null;
+        Object.keys(data).forEach(id => {
+            const nodeData = data[id];
+            nodes[id] = {
+                x: 100 + Math.random() * 300,
+                y: 100 + Math.random() * 300,
+                text: nodeData.text || '',
+                type: nodeData.type || 'normal',
+                outputs: (nodeData.options || []).map(o => ({
+                    text: o.text || '选项',
+                    next: o.next_node || '',
+                    condition_id: o.condition_id || null,
+                    effects: o.effects || {}
+                }))
+            };
+        });
+        Object.keys(nodes).forEach(id => {
+            nodes[id].outputs.forEach((o, index) => {
+                if (o.next && nodes[o.next]) {
+                    connections.push({ fromNode: id, fromIndex: index, toNode: o.next });
+                }
+            });
+        });
+        render();
+        showToast('✅ 数据已加载', 'success');
+    }
+
+    function loadSample() {
+        const sample = {
+            start: {
+                text: "老猎人皱着眉头看着你：『年轻人，你来得正好。北边森林里最近出现了一头巨熊，已经伤了好几个村民。你愿意帮我除掉它吗？』",
+                type: "normal",
+                options: [
+                    { text: "『当然，我义不容辞！』", next_node: "accept_quest", condition_id: null, effects: {} },
+                    { text: "『我有什么好处？』", next_node: "bargain", condition_id: null, effects: {} },
+                    { text: "『抱歉，我还有要事在身。』", next_node: "refuse", condition_id: null, effects: {} }
+                ]
+            },
+            bargain: {
+                text: "老猎人叹了口气：『好吧，如果你能成功，我把我珍藏的『猎熊弩』送给你，那可是件宝贝。不过你得先证明你有这个本事——至少得是5级以上的猎人。』",
+                type: "normal",
+                options: [
+                    { text: "『没问题，我等级够了！』", next_node: "accept_quest", condition_id: "level_ge_5", effects: {} },
+                    { text: "『呃……我还没那么强，还是算了吧。』", next_node: "refuse", condition_id: null, effects: {} }
+                ]
+            },
+            accept_quest: {
+                text: "老猎人露出赞许的笑容：『好样的！那巨熊藏在森林深处的洞穴里，但洞穴很暗，你需要火把照明。另外，带上一些药水，以防万一。』",
+                type: "normal",
+                options: [
+                    { text: "『好的，我准备好了！』", next_node: "cave", condition_id: "has_torch", effects: { "add_item": ["生命药水", 2] } },
+                    { text: "『等等，我先去准备一下。』", next_node: "start", condition_id: null, effects: {} }
+                ]
+            },
+            cave: {
+                text: "你来到黑暗的洞穴，点燃火把，看到巨熊正咆哮着扑来！你与巨熊展开搏斗……",
+                type: "condition",
+                options: [
+                    { text: "『喝下药水，奋力一搏！』", next_node: "fight_win", condition_id: "has_health_potion", effects: { "modify_stat": ["health", 20] } },
+                    { text: "『直接冲上去！』", next_node: "fight_lose", condition_id: "level_ge_3", effects: { "modify_stat": ["health", -30] } }
+                ]
+            },
+            fight_win: {
+                text: "你凭借药水的加持和勇猛的攻击，成功击杀了巨熊！你带着熊皮回到村庄，老猎人激动地兑现了承诺，将『猎熊弩』送给了你。",
+                type: "normal",
+                options: [
+                    { text: "『谢谢你，老猎人！』", next_node: "quest_done", condition_id: null, effects: { "add_item": ["猎熊弩", 1], "complete_quest": "猎杀巨熊" } }
+                ]
+            },
+            fight_lose: {
+                text: "你冲得太猛，被巨熊一掌拍飞，受了重伤。你勉强逃回村庄，老猎人见状赶紧给你包扎。『唉，看来你还需要磨练。』",
+                type: "normal",
+                options: [
+                    { text: "『我……我会再去练练的。』", next_node: "exit", condition_id: null, effects: { "modify_stat": ["health", -10] } }
+                ]
+            },
+            refuse: {
+                text: "老猎人失望地摇摇头：『好吧，那我自己想办法。愿你在旅途中平安。』",
+                type: "normal",
+                options: [
+                    { text: "『再见。』", next_node: "exit", condition_id: null, effects: {} }
+                ]
+            },
+            quest_done: {
+                text: "老猎人拍了拍你的肩膀：『好小子，你果然有实力！这弩就归你了，以后常来坐坐。』",
+                type: "normal",
+                options: [
+                    { text: "『一定！』", next_node: "exit", condition_id: null, effects: {} }
+                ]
+            },
+            exit: {
+                text: "对话结束。",
+                type: "normal",
+                options: []
+            }
+        };
+        loadFromData(sample);
+    }
+
+    function clearAll() {
+        if (!confirm('确定清空所有节点吗？（保留起始节点）')) return;
+        const startData = nodes.start;
+        nodes = { start: startData || { x: 200, y: 200, text: '起始节点', type: 'normal', outputs: [] } };
+        connections = [];
+        selectedNodeId = null;
+        closeProperties();
+        render();
+        showToast('已清空', 'info');
+    }
+
+    // ============================================================
+    // Toast
+    // ============================================================
+    function showToast(msg, type='info') {
+        const old = document.querySelector('.toast-notification');
+        if (old) old.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        const colors = { success: '#a6e3a1', error: '#f38ba8', info: '#89b4fa' };
+        toast.style.background = colors[type] || colors.info;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+</script>
+</body>
+</html>
